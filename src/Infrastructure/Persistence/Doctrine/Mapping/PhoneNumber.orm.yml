@@ -1,0 +1,7 @@
+App\Domain\PhoneNumber:
+  type: embeddable
+  fields:
+    phoneNumber:
+      type: string
+      column: phone_number
+      length: 255

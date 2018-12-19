@@ -1,0 +1,29 @@
+App\Domain\Verification:
+  type: entity
+  repositoryClass: App\Infrastructure\Persistence\Doctrine\Repository\VerificationRepository
+  table: verification
+  id:
+    id:
+      column: id
+      type: VerificationId
+
+  embedded:
+    phoneNumber:
+      class: App\Domain\PhoneNumber
+      columnPrefix: false
+    code:
+      class: App\Domain\VerificationCode
+      columnPrefix: false
+    retries:
+      class: App\Domain\Retries
+      columnPrefix: false
+    verified:
+      class: App\Domain\Verified
+      columnPrefix: false
+    createdAt:
+      class: App\Domain\CreatedAt
+      columnPrefix: false
+    expiresAt:
+      class: App\Domain\ExpiresAt
+      columnPrefix: false
+

@@ -29,10 +29,31 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    application.service.first:
-        class: App\Application\FirstService
+    infrastructure.repository.verification:
+        class: App\Infrastructure\Persistence\Doctrine\Repository\VerificationRepository
+        arguments:
+            - '@doctrine.orm.entity_manager'
 
-    App\Infrastructure\Ui\Api\FirstController:
+    infrastructure.verification_code_generator:
+        class: App\Infrastructure\HexadecimalVerificationCodeGenerator
+
+    infrastructure.sender:
+        class: App\Infrastructure\HttpHeaderSender
+
+    application.service.verify_phone_number:
+        class: App\Application\VerifyPhoneNumberService
+        arguments:
+            - '@infrastructure.repository.verification'
+            - '@infrastructure.verification_code_generator'
+            - '@infrastructure.sender'
+
+    application.service.check_verification:
+        class: App\Application\CheckVerificationCodeService
+        arguments:
+            - '@infrastructure.repository.verification'
+
+    App\Infrastructure\Ui\Api\VerificationController:
         public: true
         arguments:
-            - '@application.service.first'
+            - '@application.service.verify_phone_number'
+            - '@application.service.check_verification'

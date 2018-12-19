@@ -22,6 +22,12 @@ if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? $_ENV['TRUSTED_HOSTS'] ?? false
     Request::setTrustedHosts(explode(',', $trustedHosts));
 }
 
+if ($_SERVER['APP_ENV'] === 'test') {
+    define('CURRENT_DATETIME', '2018-01-02 23:00:00');
+} else {
+    define('CURRENT_DATETIME', 'now');
+}
+
 $kernel = new Kernel($_SERVER['APP_ENV'], $_SERVER['APP_DEBUG']);
 $request = Request::createFromGlobals();
 $response = $kernel->handle($request);

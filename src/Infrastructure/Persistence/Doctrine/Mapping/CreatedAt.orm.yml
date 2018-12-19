@@ -1,0 +1,6 @@
+App\Domain\CreatedAt:
+  type: embeddable
+  fields:
+    createdAt:
+      type: datetime
+      column: created_at

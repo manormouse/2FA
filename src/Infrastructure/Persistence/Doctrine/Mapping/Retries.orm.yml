@@ -1,0 +1,6 @@
+App\Domain\Retries:
+  type: embeddable
+  fields:
+    retries:
+      type: integer
+      column: retries

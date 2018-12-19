@@ -1,0 +1,7 @@
+App\Domain\VerificationCode:
+  type: embeddable
+  fields:
+    code:
+      type: string
+      column: code
+      length: 255

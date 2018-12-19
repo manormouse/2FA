@@ -1,0 +1,6 @@
+App\Domain\ExpiresAt:
+  type: embeddable
+  fields:
+    expiresAt:
+      type: datetime
+      column: expires_at

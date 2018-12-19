@@ -2,6 +2,12 @@
 #    path: /
 #    controller: App\Controller\DefaultController::index
 
-hello:
-  path:     /test
-  defaults: { _controller: App\Infrastructure\Ui\Api\FirstController::test }
+api.verify:
+  path:     /api/v1/verifications
+  controller: App\Infrastructure\Ui\Api\VerificationController::verify
+  methods: ['POST']
+
+api.check_verification:
+  path:     /api/v1/verifications/{verificationId}
+  controller: App\Infrastructure\Ui\Api\VerificationController::check
+  methods: ['POST']

@@ -64,6 +64,11 @@ class Verification
         return $this->verified;
     }
 
+    public function retries(): Retries
+    {
+        return $this->retries;
+    }
+
     public function generateCode(VerificationCodeGenerator $verificationCodeGenerator): self
     {
         if ($this->code !== null) {

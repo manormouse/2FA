@@ -60,4 +60,34 @@ class VerificationTest extends TestCase
             ->verify(new VerificationCode('AAA123'))
             ->verify(new VerificationCode('AAA123'));
     }
+
+    public function testMaximumRetriesByVerification()
+    {
+        static::expectException(\Exception::class);
+
+        $this->forceVerificationCodeGeneratorCodeReturned('AAA123');
+
+        $verification = new Verification(
+            new VerificationId('11111111-1111-1111-1111-111111111111'),
+            new PhoneNumber('+34699010203')
+        );
+
+        $verification = $verification->generateCode($this->verificationCodeGenerator);
+
+        try {
+            $verification->verify(new VerificationCode('123456'));
+        } catch (\Exception $ex) {
+            static::assertEquals(1, $verification->retries()->retries());
+            static::assertFalse($verification->verified()->isVerified());
+        }
+
+        try {
+            $verification->verify(new VerificationCode('123456'));
+        } catch (\Exception $ex) {
+            static::assertEquals(2, $verification->retries()->retries());
+            static::assertFalse($verification->verified()->isVerified());
+        }
+
+        $verification->verify(new VerificationCode('123456'));
+    }
 }

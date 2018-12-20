@@ -11,7 +11,7 @@ class HttpHeaderSender implements Sender
 {
     public function send(PhoneNumber $phoneNumber, VerificationCode $verificationCode)
     {
-        $r = Response::create('', 200, ['X-VerificationCode' => $verificationCode->code()]);
+        $r = Response::create('', 200, ['x-verificationcode' => $verificationCode->code()]);
         $r->send();
 
         return true;

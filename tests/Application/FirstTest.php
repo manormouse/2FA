@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Test\Application;
+namespace App\Tests\Application;
 
 use PHPUnit\Framework\TestCase;
 

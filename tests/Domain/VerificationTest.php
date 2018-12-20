@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Test\Domain;
+namespace App\Tests\Domain;
 
 use App\Domain\PhoneNumber;
 use App\Domain\Verification;
@@ -74,18 +74,13 @@ class VerificationTest extends TestCase
 
         $verification = $verification->generateCode($this->verificationCodeGenerator);
 
-        try {
-            $verification->verify(new VerificationCode('123456'));
-        } catch (\Exception $ex) {
-            static::assertEquals(1, $verification->retries()->retries());
-            static::assertFalse($verification->verified()->isVerified());
-        }
-
-        try {
-            $verification->verify(new VerificationCode('123456'));
-        } catch (\Exception $ex) {
-            static::assertEquals(2, $verification->retries()->retries());
-            static::assertFalse($verification->verified()->isVerified());
+        for ($retries = 1; $retries < Verification::MAX_RETRIES; $retries++) {
+            try {
+                $verification->verify(new VerificationCode('123456'));
+            } catch (\Exception $ex) {
+                static::assertEquals($retries, $verification->retries()->retries());
+                static::assertFalse($verification->verified()->isVerified());
+            }
         }
 
         $verification->verify(new VerificationCode('123456'));

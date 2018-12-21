@@ -23,12 +23,17 @@ class FunctionalTest extends WebTestCase
         $this->assertEquals(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
     }
 
-    public function testWorkflow()
+    public function testFullWorkflow()
     {
         $this->client->request('POST', '/api/v1/verifications', ['phoneNumber' => '699010203']);
 
-        $verificationId = json_decode($this->client->getResponse()->getContent(), true)['id'];
-        $verificationCode = $this->client->getResponse()->headers->get('x-verificationcode');
-        var_dump($verificationId, $verificationCode);exit;
+        $content          = json_decode($this->client->getResponse()->getContent(), true);
+        $verificationId   = $content['id'];
+        $verificationCode = $content['code'];
+
+        $this->client->request('POST', "/api/v1/verifications/{$verificationId}", ['code' => $verificationCode]);
+
+        $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $this->assertTrue(json_decode($this->client->getResponse()->getContent(), true)['verified']);
     }
 }

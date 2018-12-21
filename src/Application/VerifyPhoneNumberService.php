@@ -55,6 +55,6 @@ class VerifyPhoneNumberService
 
         $this->sender->send($phoneNumber, $verification->code());
 
-        return new VerifyPhoneNumberResponse($verification->id()->id());
+        return new VerifyPhoneNumberResponse($verification->id()->id(), $verification->code()->code());
     }
 }

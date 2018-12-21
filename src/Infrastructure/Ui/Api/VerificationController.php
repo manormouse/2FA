@@ -88,7 +88,10 @@ class VerificationController
 
         $verifyPhoneNumberResponse = $this->verifyPhoneNumberService->execute($verifyPhoneNumberRequest);
 
-        $responseData = ['id' => $verifyPhoneNumberResponse->verificationId()];
+        $responseData = [
+            'id'   => $verifyPhoneNumberResponse->verificationId(),
+            'code' => $verifyPhoneNumberResponse->code()
+        ];
 
         return $this->buildSuccess($responseData, Response::HTTP_CREATED);
     }
@@ -98,7 +101,9 @@ class VerificationController
      *
      * @param Request $request
      * @param $verificationId
+     *
      * @return JsonResponse
+     * @throws \Exception
      */
     public function check(Request $request, $verificationId)
     {

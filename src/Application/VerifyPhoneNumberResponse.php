@@ -7,9 +7,13 @@ class VerifyPhoneNumberResponse
     /** @var string */
     private $verificationId;
 
-    public function __construct(string $verificationId)
+    /** @var string */
+    private $code;
+
+    public function __construct(string $verificationId, string $code)
     {
         $this->verificationId = $verificationId;
+        $this->code           = $code;
     }
 
     /**
@@ -18,5 +22,10 @@ class VerifyPhoneNumberResponse
     public function verificationId(): string
     {
         return $this->verificationId;
+    }
+
+    public function code(): string
+    {
+        return $this->code;
     }
 }

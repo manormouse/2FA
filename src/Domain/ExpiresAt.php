@@ -2,10 +2,22 @@
 
 namespace App\Domain;
 
+/**
+ * Expiration date value object.
+ *
+ * @author: Pol Pereta Quintana <polpereta@gmail.com>
+ * @since: 21/12/18
+ */
 class ExpiresAt
 {
+    /** @var \DateTimeImmutable */
     private $expiresAt;
 
+    /**
+     * ExpiresAt constructor.
+     *
+     * @param \DateTimeImmutable $expiresAt Expiration date.
+     */
     public function __construct(\DateTimeImmutable $expiresAt)
     {
         $this->expiresAt = $expiresAt;

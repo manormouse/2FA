@@ -6,6 +6,15 @@ use App\Application\CheckVerificationCodeRequest;
 use App\Application\CheckVerificationCodeService;
 use App\Application\VerifyPhoneNumberRequest;
 use App\Application\VerifyPhoneNumberService;
+use App\Domain\IncorrectVerificationCode;
+use App\Domain\InvalidPhoneNumber;
+use App\Domain\InvalidVerificationCode;
+use App\Domain\InvalidVerificationId;
+use App\Domain\MaximumNumberOfRetries;
+use App\Domain\VerificationCodeGeneratedAlready;
+use App\Domain\VerificationDoesNotExists;
+use App\Domain\VerificationIsExpired;
+use App\Domain\VerificationVerifiedAlready;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -72,7 +81,7 @@ class VerificationController
     /**
      * Sends verification code.
      *
-     * @param Request $request
+     * @param Request $request Http request.
      *
      * @return JsonResponse
      */
@@ -86,8 +95,11 @@ class VerificationController
 
         $verifyPhoneNumberRequest = new VerifyPhoneNumberRequest($request->get('phoneNumber'));
 
-        $verifyPhoneNumberResponse = $this->verifyPhoneNumberService->execute($verifyPhoneNumberRequest);
-
+        try {
+            $verifyPhoneNumberResponse = $this->verifyPhoneNumberService->execute($verifyPhoneNumberRequest);
+        } catch (InvalidPhoneNumber | VerificationCodeGeneratedAlready $ex) {
+            return $this->buildError(Response::HTTP_BAD_REQUEST, $ex->getMessage());
+        }
         $responseData = [
             'id'   => $verifyPhoneNumberResponse->verificationId(),
             'code' => $verifyPhoneNumberResponse->code()
@@ -99,11 +111,10 @@ class VerificationController
     /**
      * Check verification code
      *
-     * @param Request $request
-     * @param $verificationId
+     * @param Request $request        Http request.
+     * @param string  $verificationId Verification code.
      *
      * @return JsonResponse
-     * @throws \Exception
      */
     public function check(Request $request, $verificationId)
     {
@@ -115,7 +126,22 @@ class VerificationController
 
         $checkVerificationCodeRequest = new CheckVerificationCodeRequest($verificationId, $request->get('code'));
 
-        $checkVerificationCodeResponse = $this->checkVerificationCodeService->execute($checkVerificationCodeRequest);
+        try {
+            $checkVerificationCodeResponse = $this->checkVerificationCodeService->execute($checkVerificationCodeRequest);
+        } catch (InvalidVerificationId $ex) {
+            return $this->buildError(Response::HTTP_NOT_FOUND, $ex->getMessage());
+        } catch (InvalidVerificationCode $ex) {
+            return $this->buildError(Response::HTTP_BAD_REQUEST, $ex->getMessage());
+        } catch (VerificationDoesNotExists $ex) {
+            return $this->buildError(Response::HTTP_NOT_FOUND, $ex->getMessage());
+        } catch (VerificationIsExpired | IncorrectVerificationCode | VerificationVerifiedAlready $ex) {
+            return $this->buildError(Response::HTTP_BAD_REQUEST, $ex->getMessage());
+        } catch (MaximumNumberOfRetries $ex) {
+            return $this->buildError(
+                Response::HTTP_BAD_REQUEST,
+                'You achieved the maximum number of retries allowed. Generate a new verification'
+            );
+        }
 
         $responseData = [
             'phoneNumber' => $checkVerificationCodeResponse->phoneNumber(),
